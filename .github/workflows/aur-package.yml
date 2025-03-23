@@ -1,0 +1,25 @@
+name: AUR Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install base-devel
+        run: sudo pacman -S --noconfirm base-devel
+
+      - name: Build package
+        run: |
+          makepkg -si --noconfirm
+
+      - name: Publish to AUR
+        run: |
+          # Add your AUR publishing commands here
+          # For example, using `git push` to push to your AUR repository
