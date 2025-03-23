@@ -1,49 +1,117 @@
-# Dotts, the dotfiles manager from the future
-Manage your `dotfiles` in diferent machines with ease and speed
+# Dotts - The Dotfiles Manager from the Future
+
+Manage your dotfiles across different machines with ease and speed.
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![PyPi](https://img.shields.io/badge/pypi-%23ececec.svg?style=for-the-badge&logo=pypi&logoColor=1f73b7)
 
 ## Features
-- dotfiles management via `git`
-- .dependencies, the dependencies of your `dotfiles`
-- analyze and merge changes
-- cool cli looks
+- **Dotfiles Management**: Easily manage your dotfiles using Git.
+- **Dependency Management**: Specify dependencies for your dotfiles.
+- **Plugin Support**: Install and manage plugins for applications like Neovim.
+- **Environment Variable Management**: Add, remove, and list environment variables.
+- **Machine Management**: Keep track of different machines and their configurations.
+- **User-Friendly CLI**: A clean and intuitive command-line interface.
+
+## Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/sufremoak/dotts.git
+   cd dotts
+   ```
+
+2. **Install Dependencies**:
+   Make sure you have Python 3 and pip installed. Then, install the required packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Initialize Dotts**:
+   Run the following command to set up your dotfiles manager:
+   ```bash
+   python main.py init
+   ```
 
 ## Usage
+
+### Basic Commands
+
+- **Initialize Dotts**:
+  ```bash
+  dotts init
+  ```
+
+- **Synchronize Dotfiles**:
+  ```bash
+  dotts sync
+  ```
+
+- **Show Git Status**:
+  ```bash
+  dotts status
+  ```
+
+- **Manage Dependencies**:
+  ```bash
+  dotts dependencies add <name> <install_method>
+  dotts dependencies mod <name> <new_install_method>
+  dotts dependencies list
+  ```
+
+- **Manage Plugins**:
+  ```bash
+  dotts install_plugin nvim <plugin_name>
+  dotts list_plugins nvim
+  ```
+
+- **Manage Environment Variables**:
+  ```bash
+  dotts env add <VAR_NAME> <value>
+  dotts env remove <VAR_NAME>
+  dotts env list
+  ```
+
+- **Manage Machines**:
+  ```bash
+  dotts machines add <machine_name>
+  dotts machines remove <machine_name>
+  dotts machines list
+  ```
+
+### Example Usage
+
 ```bash
-# initialize dotts
-$ dotts init --recursive --path="~/.config"
-INFO: Creating file: '~/.config/.dottsrc'
-INFO: Creating file '~/.config/.dependencies'
-INFO: Creating file '~/.config/.dotts.list.sh'
-INFO: Modifing file '~/.config/.dotts.list.sh' with "chmod +x $FILE"
-INFO: Initializing git with "git init $DOTTS_PATH"
-INFO: Done.
-NOTE: You will need to manually add a remote repository for your dotfiles.
-# add dotfiles via dotdependencies
-$ dotts dependencies add nvim --install-via-pm="apt"
-INFO: Running "yes | sudo apt install neovim"
-# This will install neovim via apt
-INFO: Scanning for changes in $DOTTS_PATH...
-INFO: Found new configuration for program 'nvim'
-INFO: Adding nvim:'~/.config/nvim' to ".dependencies"
-INFO: Done.
-# modify a configuration via formulae
-$ dotts dependencies mod nvim --formulae="plugs:lazyvim"
-RUN: Formulae Plugins/LazyVim.sh
-!git clone $LAZYVIM_REPO $DOTTS_PATH/nvim [done]
-!rm -rf $DOTTS_PATH/nvim/.git [done]
-INFO: Writing changes to .dependencies [done]
+# Add a dependency
+dotts dependencies add nvim --install_via_pm="apt"
+
+# Install a plugin
+dotts install_plugin nvim username/repo
+
+# Add an environment variable
+dotts env add MY_VAR "some_value"
+
+# List all machines
+dotts machines list
 ```
 
-> [!NOTE]
-> The formulae feature is under development, and with limited support, bugs and anything can be reported as a issue
+## Contributing
 
-## Dependencies
-- [typer](https://typer.tiangolo.com/)
-- [rich](https://github.com/Textualize/rich)
-- [pyinstaller](https://pyinstaller.org/en/stable/)
+Contributions are welcome! Please follow these steps to contribute:
 
-##
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Create a new Pull Request.
 
-Made with ❤ by SufremOak
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [Typer](https://typer.tiangolo.com/) for creating a great CLI framework.
+- [Rich](https://github.com/Textualize/rich) for beautiful console output.
+- [Python JSON Logger](https://github.com/madzak/python-json-logger) for structured logging.
+
+Made with ❤ by [SufremOak](https://github.com/SufremOak)

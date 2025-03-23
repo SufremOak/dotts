@@ -38,7 +38,7 @@ def run_command(command):
 def checkGitInstallation():
     run_command(['git', '--version'])
     print(f"[green]Git is installed.[/green]")
-
+    
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, complex):
@@ -149,18 +149,204 @@ def save_dependencies(dependencies):
     with open(DEPENDENCIES_FILE, 'w') as f:
         json.dump(dependencies, f, indent=4)
 
+@app.command(help="Install a plugin for a specific application.")
+def install_plugin(app_name: str, plugin_name: str):
+    if app_name == "nvim":
+        # Example: Install a Neovim plugin using a package manager
+        run_command(['git', 'clone', f'https://github.com/{plugin_name}.git', '~/.config/nvim/plugins/{plugin_name}'])
+        print(f"[green]Installed plugin '{plugin_name}' for {app_name}.[/green]")
+    else:
+        print(f"[bold red]Error: Unsupported application '{app_name}'.[/bold red]")
+
+@app.command(help="List installed plugins for a specific application.")
+def list_plugins(app_name: str):
+    if app_name == "nvim":
+        plugins_dir = os.path.expanduser('~/.config/nvim/plugins/')
+        if os.path.exists(plugins_dir):
+            plugins = os.listdir(plugins_dir)
+            if plugins:
+                print(f"[green]Installed plugins for {app_name}:[/green]")
+                for plugin in plugins:
+                    print(f"- {plugin}")
+            else:
+                print("[yellow]No plugins installed.[/yellow]")
+        else:
+            print(f"[bold red]Error: No plugins directory found for {app_name}.[/bold red]")
+    else:
+        print(f"[bold red]Error: Unsupported application '{app_name}'.[/bold red]")
+
 @app.command(help="Modify a configuration via formulae.")
 def formulae(name: str, formula: str):
-    # Example: Run a specific formula script based on the name
     if name == "nvim":
         if formula == "plugs:lazyvim":
             run_command(['git', 'clone', 'https://github.com/username/LazyVim.git', '~/.config/nvim'])
             print(f"[green]Formulae applied for {name}: {formula}[/green]")
-            # Additional commands to set up LazyVim can be added here
         else:
             print(f"[bold red]Error: Unknown formula '{formula}' for {name}.[/bold red]")
     else:
         print(f"[bold red]Error: Unknown configuration '{name}'.[/bold red]")
+
+@app.command(help="Manage plugins for your dotfiles. Actions: add, remove, list.")
+def plugins(action: str, name: str = None, install_via_pm: str = None):
+    if action == "add":
+        if not name or not install_via_pm:
+            print("[bold red]Error: You must provide a name and installation method.[/bold red]")
+            return
+        add_plugin(name, install_via_pm)
+    elif action == "remove":
+        if not name:
+            print("[bold red]Error: You must provide a name of the plugin to remove.[/bold red]")
+            return
+        remove_plugin(name)
+    elif action == "list":
+        list_plugins()
+    else:
+        print("[bold red]Error: Invalid action. Use 'add', 'remove', or 'list'.[/bold red]")
+
+def add_plugin(name: str, install_via_pm: str):
+    plugins = load_plugins()
+    plugins[name] = install_via_pm
+    save_plugins(plugins)
+    print(f"[green]Added plugin: {name} with installation method: {install_via_pm}[/green]")
+
+def remove_plugin(name: str):
+    plugins = load_plugins()
+    if name in plugins:
+        del plugins[name]
+        save_plugins(plugins)
+        print(f"[green]Removed plugin: {name}[/green]")
+    else:
+        print(f"[bold red]Error: Plugin '{name}' not found.[/bold red]")
+
+def list_plugins():
+    plugins = load_plugins()
+    if plugins:
+        print("[green]Current plugins:[/green]")
+        for name, method in plugins.items():
+            print(f"- {name}: {method}")
+    else:
+        print("[yellow]No plugins found.[/yellow]")
+
+def load_plugins():
+    plugins_file = os.path.expanduser('~/.config/.plugins.json')
+    if os.path.exists(plugins_file):
+        with open(plugins_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_plugins(plugins):
+    plugins_file = os.path.expanduser('~/.config/.plugins.json')
+    with open(plugins_file, 'w') as f:
+        json.dump(plugins, f, indent=4)
+
+@app.command(help="Manage environment variables. Actions: add, remove, list.")
+def env(action: str, name: str = None, value: str = None):
+    if action == "add":
+        if not name or value is None:
+            print("[bold red]Error: You must provide a name and value for the environment variable.[/bold red]")
+            return
+        add_env_variable(name, value)
+    elif action == "remove":
+        if not name:
+            print("[bold red]Error: You must provide a name of the environment variable to remove.[/bold red]")
+            return
+        remove_env_variable(name)
+    elif action == "list":
+        list_env_variables()
+    else:
+        print("[bold red]Error: Invalid action. Use 'add', 'remove', or 'list'.[/bold red]")
+
+def add_env_variable(name: str, value: str):
+    env_vars = load_env_variables()
+    env_vars[name] = value
+    save_env_variables(env_vars)
+    print(f"[green]Added environment variable: {name} with value: {value}[/green]")
+
+def remove_env_variable(name: str):
+    env_vars = load_env_variables()
+    if name in env_vars:
+        del env_vars[name]
+        save_env_variables(env_vars)
+        print(f"[green]Removed environment variable: {name}[/green]")
+    else:
+        print(f"[bold red]Error: Environment variable '{name}' not found.[/bold red]")
+
+def list_env_variables():
+    env_vars = load_env_variables()
+    if env_vars:
+        print("[green]Current environment variables:[/green]")
+        for name, value in env_vars.items():
+            print(f"- {name}: {value}")
+    else:
+        print("[yellow]No environment variables found.[/yellow]")
+
+def load_env_variables():
+    env_file = os.path.expanduser('~/.config/.env.json')
+    if os.path.exists(env_file):
+        with open(env_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_env_variables(env_vars):
+    env_file = os.path.expanduser('~/.config/.env.json')
+    with open(env_file, 'w') as f:
+        json.dump(env_vars, f, indent=4)
+
+@app.command(help="Manage machines for your dotfiles. Actions: add, remove, list.")
+def machines(action: str, name: str = None):
+    if action == "add":
+        if not name:
+            print("[bold red]Error: You must provide a name for the machine.[/bold red]")
+            return
+        add_machine(name)
+    elif action == "remove":
+        if not name:
+            print("[bold red]Error: You must provide a name of the machine to remove.[/bold red]")
+            return
+        remove_machine(name)
+    elif action == "list":
+        list_machines()
+    else:
+        print("[bold red]Error: Invalid action. Use 'add', 'remove', or 'list'.[/bold red]")
+
+def add_machine(name: str):
+    machines = load_machines()
+    if name in machines:
+        print(f"[bold red]Error: Machine '{name}' already exists.[/bold red]")
+        return
+    machines[name] = {}
+    save_machines(machines)
+    print(f"[green]Added machine: {name}[/green]")
+
+def remove_machine(name: str):
+    machines = load_machines()
+    if name in machines:
+        del machines[name]
+        save_machines(machines)
+        print(f"[green]Removed machine: {name}[/green]")
+    else:
+        print(f"[bold red]Error: Machine '{name}' not found.[/bold red]")
+
+def list_machines():
+    machines = load_machines()
+    if machines:
+        print("[green]Current machines:[/green]")
+        for name in machines.keys():
+            print(f"- {name}")
+    else:
+        print("[yellow]No machines found.[/yellow]")
+
+def load_machines():
+    machines_file = os.path.expanduser('~/.config/.machines.json')
+    if os.path.exists(machines_file):
+        with open(machines_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_machines(machines):
+    machines_file = os.path.expanduser('~/.config/.machines.json')
+    with open(machines_file, 'w') as f:
+        json.dump(machines, f, indent=4)
 
 if __name__ == "__main__":
     app()
