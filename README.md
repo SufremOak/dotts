@@ -114,4 +114,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Rich](https://github.com/Textualize/rich) for beautiful console output.
 - [Python JSON Logger](https://github.com/madzak/python-json-logger) for structured logging.
 
-Made with ❤ by [SufremOak](https://github.com/SufremOak)
+Made with ❤ by SufremOak
