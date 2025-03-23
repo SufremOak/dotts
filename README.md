@@ -47,3 +47,5 @@ INFO: Writing changes to .dependencies [done]
 ##
 
 Made with ❤ by SufremOak
+
+[![Upload Python Package](https://github.com/SufremOak/dotts/actions/workflows/python-publish.yml/badge.svg)](https://github.com/SufremOak/dotts/actions/workflows/python-publish.yml)
